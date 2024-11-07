@@ -1,0 +1,17 @@
+.{
+	.name = "libsamplerate",
+	.version = "0.2.3",
+	.dependencies = .{
+		.libsamplerate = .{
+			.url = "https://github.com/libsndfile/libsamplerate/archive/4858fb016550d677de2356486bcceda5aed85a72.tar.gz",
+			.hash = "1220d1694984140d3542423c223a168b88790bc6920da33fc9d42173338fda29504e",
+		},
+	},
+	.paths = .{
+		"LICENSE",
+		"README.md",
+		"build.zig",
+		"build.zig.zon",
+		"samplerate.zig",
+	},
+}
