@@ -1,7 +1,8 @@
 const std = @import("std");
+const LinkMode = std.builtin.LinkMode;
 
 const Options = struct {
-	shared: bool = false,
+	linkage: LinkMode = .static,
 };
 
 pub fn build(b: *std.Build) void {
@@ -10,17 +11,21 @@ pub fn build(b: *std.Build) void {
 
 	const defaults = Options{};
 	const opt = Options{
-		.shared = b.option(bool, "shared", "Build shared library")
-			orelse defaults.shared,
+		.linkage = b.option(LinkMode, "linkage", "Library linking method")
+			orelse defaults.linkage,
 	};
 
-	const upstream = b.dependency("libsamplerate", .{});
-	const lib = if (opt.shared) b.addSharedLibrary(.{
-		.name="samplerate", .target=target, .optimize=optimize, .pic=true,
-	}) else b.addStaticLibrary(.{
-		.name="samplerate", .target=target, .optimize=optimize,
+	const lib = b.addLibrary(.{
+		.name = "samplerate",
+		.linkage = opt.linkage,
+		.root_module = b.createModule(.{
+			.target = target,
+			.optimize = optimize,
+			.link_libc = true,
+		}),
 	});
-	lib.linkLibC();
+
+	const upstream = b.dependency("libsamplerate", .{});
 	lib.addCSourceFiles(.{
 		.root = upstream.path("src"),
 		.files = &.{
