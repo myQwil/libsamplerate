@@ -66,16 +66,14 @@ fn toError(i: Result) Error {
 }
 
 pub const Converter = enum(c_uint) {
-	const Self = @This();
-
 	sinc_best,
 	sinc_medium,
 	sinc_fast,
 	zero_order_hold,
 	linear,
 
-	const lo = @intFromEnum(Self.sinc_best);
-	const hi = @intFromEnum(Self.linear);
+	const lo = @intFromEnum(Converter.sinc_best);
+	const hi = @intFromEnum(Converter.linear);
 	pub fn expectValid(i: u32) Error!void {
 		if (i < lo or hi < i) {
 			return Error.BadConverter;
@@ -84,8 +82,6 @@ pub const Converter = enum(c_uint) {
 };
 
 pub const Data = extern struct {
-	const Self = @This();
-
 	/// set by caller, pointer to the input data samples
 	data_in: [*]const f32,
 	/// set by caller, pointer to the output data samples
@@ -107,21 +103,19 @@ pub const Data = extern struct {
 	/// output buffer at a fixed conversion ratio.
 	/// Simple interface does not require initialisation as it can only operate on
 	/// a single buffer worth of audio.
-	pub fn simple(self: *Self, conv: Converter, chans: u32) Error!void {
+	pub fn simple(self: *Data, conv: Converter, chans: u32) Error!void {
 		const result = src_simple(self, conv, chans);
 		return if (result == success) {} else toError(result);
 	}
-	extern fn src_simple(*Self, Converter, c_uint) Result;
+	extern fn src_simple(*Data, Converter, c_uint) Result;
 };
 
 pub const State = opaque {
-	const Self = @This();
-
 	/// Return an error. Mainly useful for callback based API.
-	pub fn getError(self: *Self) Error {
+	pub fn getError(self: *State) Error {
 		return toError(@intCast(src_error(self)));
 	}
-	extern fn src_error(*Self) c_int;
+	extern fn src_error(*State) c_int;
 
 	/// Standard initialisation function : return an anonymous pointer to the
 	/// internal state of the converter. Choose a converter from the enums below.
@@ -133,11 +127,11 @@ pub const State = opaque {
 
 	/// Clone a handle : return an anonymous pointer to a new converter
 	/// containing the same internal state as orig.
-	pub fn clone(self: *Self) Error!*Self {
+	pub fn clone(self: *State) Error!*State {
 		var result: Result = undefined;
 		return if (src_clone(self, &result)) |s| s else toError(result);
 	}
-	extern fn src_clone(*Self, *Result) ?*Self;
+	extern fn src_clone(*State, *Result) ?*State;
 
 	/// Initilisation for callback based API : return an anonymous pointer to the
 	/// internal state of the converter. Choose a converter from the enums below.
@@ -145,57 +139,60 @@ pub const State = opaque {
 	/// value, when processing, user supplied function "func" gets called with
 	/// cb_data as first parameter.
 	pub fn callbackNew(
-		func: Callback, conv: Converter, chans: u32, cb_data: ?*anyopaque,
-	) Error!*Self {
+		func: Callback,
+		conv: Converter,
+		chans: u32,
+		cb_data: ?*anyopaque,
+	) Error!*State {
 		var result: Result = undefined;
 		return if (src_callback_new(func, conv, chans, &result, cb_data)) |s|
 			s else toError(result);
 	}
-	extern fn src_callback_new(Callback, Converter, c_uint, *Result, ?*anyopaque) ?*Self;
+	extern fn src_callback_new(Callback, Converter, c_uint, *Result, ?*anyopaque) ?*State;
 
 	/// Cleanup all internal allocations.
-	pub fn delete(self: *Self) void {
+	pub fn delete(self: *State) void {
 		_ = src_delete(self);
 	}
-	extern fn src_delete(*Self) ?*Self;
+	extern fn src_delete(*State) ?*State;
 
 	/// Standard processing function.
-	pub fn process(self: *Self, data: *Data) Error!void {
+	pub fn process(self: *State, data: *Data) Error!void {
 		const result = src_process(self, data);
 		return if (result == success) {} else toError(result);
 	}
-	extern fn src_process(*Self, *Data) Result;
+	extern fn src_process(*State, *Data) Result;
 
 	/// Callback based processing function. Read up to frames worth of data from
 	/// the converter int *data and return frames read or error.
-	pub fn callbackRead(self: *Self, ratio: f64, frames: usize, data: *f32) !usize {
+	pub fn callbackRead(self: *State, ratio: f64, frames: usize, data: *f32) !usize {
 		const result = src_callback_read(self, ratio, @intCast(frames), data);
 		return if (result > 0) @intCast(result) else self.getError();
 	}
-	extern fn src_callback_read(*Self, f64, c_long, *f32) c_long;
+	extern fn src_callback_read(*State, f64, c_long, *f32) c_long;
 
 	/// Set a new SRC ratio. This allows step responses in the conversion ratio.
-	pub fn setRatio(self: *Self, new_ratio: f64) Error!void {
+	pub fn setRatio(self: *State, new_ratio: f64) Error!void {
 		const result = src_set_ratio(self, new_ratio);
 		return if (result == success) {} else toError(result);
 	}
-	extern fn src_set_ratio(*Self, f64) Result;
+	extern fn src_set_ratio(*State, f64) Result;
 
 	/// Get the current channel count.
-	pub fn getChannels(self: *Self) Error!u32 {
+	pub fn getChannels(self: *State) Error!u32 {
 		const result = src_get_channels(self);
 		return if (result >= 0) @intCast(result) else toError(-result);
 	}
-	extern fn src_get_channels(*Self) Result;
+	extern fn src_get_channels(*State) Result;
 
 	/// Reset the internal SRC state.
 	/// Does not modify the quality settings.
 	/// Does not free any memory allocations.
-	pub fn reset(self: *Self) Error!void {
+	pub fn reset(self: *State) Error!void {
 		const result = src_reset(self);
 		return if (result == success) {} else toError(result);
 	}
-	extern fn src_reset(*Self) Result;
+	extern fn src_reset(*State) Result;
 };
 
 /// Return the name of a sample rate converter
