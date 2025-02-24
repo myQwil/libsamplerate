@@ -1,4 +1,4 @@
-const strlen = @cImport({ @cInclude("string.h"); }).strlen;
+const std = @import("std");
 
 /// User supplied callback function type for use with src_callback_new()
 /// and src_callback_read(). First parameter is the same pointer that was
@@ -202,7 +202,7 @@ pub const State = opaque {
 /// or null if no sample rate converter exists for the given value.
 pub fn getName(conv: Converter) ?[:0]const u8 {
 	const str = src_get_name(conv);
-	return if (str) |s| s[0..strlen(s)] else null;
+	return if (str) |s| s[0..std.mem.len(s)] else null;
 }
 extern fn src_get_name(Converter) ?[*:0]const u8;
 
@@ -210,13 +210,13 @@ extern fn src_get_name(Converter) ?[*:0]const u8;
 /// or null if no sample rate converter exists for the given value.
 pub fn getDescription(conv: Converter) ?[:0]const u8 {
 	const str = src_get_description(conv);
-	return if (str) |s| s[0..strlen(s)] else null;
+	return if (str) |s| s[0..std.mem.len(s)] else null;
 }
 extern fn src_get_description(Converter) ?[*:0]const u8;
 
 pub fn getVersion() [:0]const u8 {
 	const s = src_get_version();
-	return s[0..strlen(s)];
+	return s[0..std.mem.len(s)];
 }
 extern fn src_get_version() [*:0]const u8;
 
@@ -224,7 +224,7 @@ extern fn src_get_version() [*:0]const u8;
 pub fn strError(err: Error) ?[:0]const u8 {
 	for (0..error_list.len) |i| {
 		if (error_list[i] == err) {
-			return if (src_strerror(@intCast(i + 1))) |s| s[0..strlen(s) :0] else null;
+			return if (src_strerror(@intCast(i + 1))) |s| s[0..std.mem.len(s) :0] else null;
 		}
 	}
 	return null;
