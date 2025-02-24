@@ -236,22 +236,22 @@ pub fn isValidRatio(ratio: f64) bool {
 }
 extern fn src_is_valid_ratio(ratio: f64) c_int;
 
-pub fn shortToFloat(in: [*]const i16, out: []f32) void {
-	src_short_to_float_array(in, out.ptr, @intCast(out.len));
+pub fn shortToFloat(in: [*]const i16, out: [*]f32, len: usize) void {
+	src_short_to_float_array(in, out, @intCast(len));
 }
 extern fn src_short_to_float_array(in: [*]const c_short, out: [*]f32, len: c_int) void;
 
-pub fn floatToShort(in: [*]const f32, out: []i16) void {
-	src_float_to_short_array(in, out.ptr, @intCast(out.len));
+pub fn floatToShort(in: [*]const f32, out: [*]i16, len: usize) void {
+	src_float_to_short_array(in, out, @intCast(len));
 }
 extern fn src_float_to_short_array(in: [*]const f32, out: [*]c_short, len: c_int) void;
 
-pub fn intToFloat(in: [*]const i32, out: []f32) void {
-	src_int_to_float_array(in, out.ptr, @intCast(out.len));
+pub fn intToFloat(in: [*]const i32, out: [*]f32, len: usize) void {
+	src_int_to_float_array(in, out, @intCast(len));
 }
 extern fn src_int_to_float_array(in: [*]const c_int, out: [*]f32, len: c_int) void;
 
-pub fn floatToInt(in: [*]const f32, out: []i32) void {
-	src_float_to_int_array(in, out.ptr, @intCast(out.len));
+pub fn floatToInt(in: [*]const f32, out: [*]i32, len: usize) void {
+	src_float_to_int_array(in, out, @intCast(len));
 }
 extern fn src_float_to_int_array(in: [*]const f32, out: [*]c_int, len: c_int) void;
