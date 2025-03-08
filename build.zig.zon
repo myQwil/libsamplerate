@@ -1,11 +1,12 @@
 .{
-	.name = "libsamplerate",
+	.name = .libsamplerate,
 	.version = "0.2.3",
-	.minimum_zig_version = "0.14.0-dev.3026+c225b780e",
+	.fingerprint = 0x7d245436ebac97f,
+	.minimum_zig_version = "0.14.0",
 	.dependencies = .{
 		.libsamplerate = .{
 			.url = "git+https://github.com/libsndfile/libsamplerate#4858fb016550d677de2356486bcceda5aed85a72",
-			.hash = "1220e77269f8abcd1cf54dfe87efa1e40387b8605e653ca88123264d9fa730c13072",
+			.hash = "N-V-__8AACAQngDncmn4q80c9U3-h--h5AOHuGBeZTyogSMm",
 		},
 	},
 	.paths = .{
