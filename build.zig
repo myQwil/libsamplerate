@@ -43,6 +43,7 @@ pub fn build(b: *std.Build) void {
 			"-DVERSION=\"0.2.3\"",
 		},
 	});
+	lib.addIncludePath(upstream.path("include"));
 	b.installArtifact(lib);
 
 	const mod = b.addModule("samplerate", .{
