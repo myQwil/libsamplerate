@@ -35,7 +35,7 @@ pub const Error = error {
 	BadInternalState,
 };
 
-const error_list = [_]Error {
+const error_list = [_]Error{
 	Error.MallocFailed,
 	Error.BadState,
 	Error.BadData,
