@@ -6,7 +6,7 @@ const std = @import("std");
 /// pointer. The user supplied callback function must modify *data to
 /// point to the start of the user supplied float array. The user supplied
 /// function must return the number of frames that **data points to.
-pub const Callback = ?*const fn (*anyopaque, *[*]f32) callconv(.C) c_long;
+pub const Callback = ?*const fn (*anyopaque, *[*]f32) callconv(.c) c_long;
 const success = 0;
 const err_offset = 1;
 

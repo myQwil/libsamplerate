@@ -11,8 +11,9 @@ pub fn build(b: *std.Build) void {
 
 	const default: Options = .{};
 	const opt: Options = .{
-		.linkage = b.option(LinkMode, "linkage", "Library linking method")
-			orelse default.linkage,
+		.linkage = b.option(LinkMode, "linkage",
+			"Library linking method"
+		) orelse default.linkage,
 	};
 
 	const lib = b.addLibrary(.{
