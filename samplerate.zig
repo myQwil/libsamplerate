@@ -86,17 +86,17 @@ pub const Data = extern struct {
 	/// set by caller, pointer to the output data samples
 	data_out: [*]f32,
 	/// set by caller, number of input frames
-	input_frames: c_long,
+	input_frames: c_long = 0,
 	/// set by caller, max number of output frames
-	output_frames: c_long,
+	output_frames: c_long = 0,
 	/// number of input frames consumed
-	input_frames_used: c_long,
+	input_frames_used: c_long = 0,
 	/// number of output frames generated
-	output_frames_gen: c_long,
+	output_frames_gen: c_long = 0,
 	/// set by caller and internally, 0 if more input data is available
-	end_of_input: c_int,
+	end_of_input: c_int = 0,
 	/// set by caller, output_sample_rate / input_sample_rate
-	src_ratio: f64,
+	src_ratio: f64 = 1,
 
 	/// Simple interface for performing a single conversion from input buffer to
 	/// output buffer at a fixed conversion ratio.
@@ -118,7 +118,7 @@ pub const State = opaque {
 
 	/// Standard initialisation function : return an anonymous pointer to the
 	/// internal state of the converter. Choose a converter from the enums below.
-	pub fn new(conv: Converter, channels: c_uint) Error!*State {
+	pub fn init(conv: Converter, channels: c_uint) Error!*State {
 		var result: c_uint = undefined;
 		return if (src_new(conv, channels, &result)) |s| s else toError(result);
 	}
@@ -150,7 +150,7 @@ pub const State = opaque {
 	extern fn src_callback_new(Callback, Converter, c_uint, *c_uint, ?*anyopaque) ?*State;
 
 	/// Cleanup all internal allocations.
-	pub fn delete(self: *State) void {
+	pub fn deinit(self: *State) void {
 		_ = src_delete(self);
 	}
 	extern fn src_delete(*State) ?*State;
