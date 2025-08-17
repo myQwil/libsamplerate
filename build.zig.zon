@@ -5,8 +5,8 @@
 	.minimum_zig_version = "0.14.0",
 	.dependencies = .{
 		.libsamplerate = .{
-			.url = "git+https://github.com/libsndfile/libsamplerate#4858fb016550d677de2356486bcceda5aed85a72",
-			.hash = "N-V-__8AACAQngDncmn4q80c9U3-h--h5AOHuGBeZTyogSMm",
+			.url = "git+https://github.com/libsndfile/libsamplerate#15c392d47e71b9395a759544b3818a1235fe1a1d",
+			.hash = "N-V-__8AAJENngBClgu4SHZlBpEv0r8H-PSGJS6G_ma05tdj",
 		},
 	},
 	.paths = .{
