@@ -86,15 +86,15 @@ pub const Data = extern struct {
 	/// set by caller, pointer to the output data samples
 	data_out: [*]f32,
 	/// set by caller, number of input frames
-	input_frames: c_long = 0,
+	input_frames: c_ulong = 0,
 	/// set by caller, max number of output frames
-	output_frames: c_long = 0,
+	output_frames: c_ulong = 0,
 	/// number of input frames consumed
-	input_frames_used: c_long = 0,
+	input_frames_used: c_ulong = 0,
 	/// number of output frames generated
-	output_frames_gen: c_long = 0,
+	output_frames_gen: c_ulong = 0,
 	/// set by caller and internally, 0 if more input data is available
-	end_of_input: c_int = 0,
+	end_of_input: c_uint = 0,
 	/// set by caller, output_sample_rate / input_sample_rate
 	src_ratio: f64 = 1,
 
