@@ -10,10 +10,11 @@
 		},
 	},
 	.paths = .{
-		"LICENSE",
-		"README.md",
+		"examples",
 		"build.zig",
 		"build.zig.zon",
+		"LICENSE",
+		"README.md",
 		"samplerate.zig",
 	},
 }

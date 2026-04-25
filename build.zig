@@ -19,11 +19,11 @@ pub fn build(b: *std.Build) void {
 	const optimize = b.standardOptimizeOption(.{});
 	const opt: Options = .init(b);
 
+	const upstream = b.dependency("libsamplerate", .{});
+
 	//---------------------------------------------------------------------------
 	// Library
 	const lib = blk: {
-		const upstream = b.dependency("libsamplerate", .{});
-
 		const mod = b.createModule(.{
 			.target = target,
 			.optimize = optimize,
@@ -59,10 +59,43 @@ pub fn build(b: *std.Build) void {
 
 	//---------------------------------------------------------------------------
 	// Zig module
+	const c_mod = blk: {
+		const c = b.addTranslateC(.{
+			.root_source_file = upstream.path("include/samplerate.h"),
+			.target = target,
+			.optimize = optimize,
+		});
+		break :blk c.createModule();
+	};
 	const zig_mod = b.addModule("samplerate", .{
 		.root_source_file = b.path("samplerate.zig"),
 		.target = target,
 		.optimize = optimize,
+		.imports = &.{ .{ .name = "cdef", .module = c_mod } },
 	});
 	zig_mod.linkLibrary(lib);
+
+	//---------------------------------------------------------------------------
+	// Zig example
+	const exe = b.addExecutable(.{
+		.name = "hello",
+		.root_module = b.createModule(.{
+			.root_source_file = b.path("examples/hello.zig"),
+			.target = target,
+			.optimize = optimize,
+			.imports = &.{ .{ .name = "rabbit", .module = zig_mod } },
+		}),
+	});
+
+	const install = b.addInstallArtifact(exe, .{});
+	const step_install = b.step("hello", "Build the zig example");
+	step_install.dependOn(&install.step);
+
+	const run = b.addRunArtifact(exe);
+	run.step.dependOn(&install.step);
+	const step_run = b.step("run_hello", "Build and run the zig example");
+	step_run.dependOn(&run.step);
+	// if (b.args) |args| {
+		// run.addArgs(args);
+	// }
 }
