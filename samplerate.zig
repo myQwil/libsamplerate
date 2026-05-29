@@ -251,7 +251,7 @@ pub fn intToFloat(I: type, F: type, in: []const I, out: []F) void {
 
 test intToFloat {
 	const in = [_]i32{ -0x1p31, -0x1p16, 0, 0x1p16, 0x1p31-1 };
-	var out = [_]f64{ 0 } ** in.len;
+	var out: [in.len]f64 = @splat(0);
 	intToFloat(i32, f64, &in, &out);
 	try std.testing.expectEqual(out[0], -1);
 	try std.testing.expectEqual(out[4], 0.9999999995343387);
@@ -274,7 +274,7 @@ pub fn floatToInt(F: type, I: type, in: []const F, out: []I) void {
 
 test floatToInt {
 	const in = [_]f32{ -1, -0x1p-10, 0, 0x1p-10, 1 };
-	var out = [_]i32{ 0 } ** in.len;
+	var out: [in.len]i32 = @splat(0);
 	floatToInt(f32, i32, &in, &out);
 	try std.testing.expectEqual(out[0], std.math.minInt(i32));
 	try std.testing.expectEqual(out[4], std.math.maxInt(i32));
