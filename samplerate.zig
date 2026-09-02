@@ -123,7 +123,7 @@ pub const State = opaque {
 
 	/// Standard initialisation function : return an anonymous pointer to the
 	/// internal state of the converter. Choose a converter from the enums below.
-	pub fn init(conv: Converter, channels: uint) Error!*State {
+	pub fn create(conv: Converter, channels: uint) Error!*State {
 		var result: c_int = undefined;
 		return if (c.src_new(@intFromEnum(conv), channels, &result)) |s|
 			@ptrCast(s)
@@ -157,7 +157,7 @@ pub const State = opaque {
 	}
 
 	/// Cleanup all internal allocations.
-	pub fn deinit(self: *State) void {
+	pub fn destroy(self: *State) void {
 		_ = c.src_delete(@ptrCast(self)); // returns null
 	}
 
