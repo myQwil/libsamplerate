@@ -268,7 +268,7 @@ pub fn floatToInt(F: type, I: type, in: []const F, out: []I) void {
 		else if (scaled_value <= -max)
 			-max
 		else
-			@intFromFloat(@round(scaled_value));
+			@trunc(@round(scaled_value));
 	}
 }
 

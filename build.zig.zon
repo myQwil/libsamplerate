@@ -2,7 +2,7 @@
 	.name = .libsamplerate,
 	.version = "0.2.3",
 	.fingerprint = 0x7d245436ebac97f,
-	.minimum_zig_version = "0.14.0",
+	.minimum_zig_version = "0.17.0",
 	.dependencies = .{
 		.libsamplerate = .{
 			.url = "git+https://github.com/libsndfile/libsamplerate#15c392d47e71b9395a759544b3818a1235fe1a1d",
