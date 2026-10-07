@@ -1,4 +1,4 @@
-const c = @import("cdef");
+const c = @import("c");
 const std = @import("std");
 
 pub const uint = @Int(.unsigned, @bitSizeOf(c_int) - 1);
