@@ -76,8 +76,8 @@ pub const Converter = enum(uint) {
 	zero_order_hold = 3,
 	linear = 4,
 
-	const lo = @intFromEnum(Converter.sinc_best);
-	const hi = @intFromEnum(Converter.linear);
+	const lo = @backingInt(Converter.sinc_best);
+	const hi = @backingInt(Converter.linear);
 	pub fn expectValid(i: uint) error{BadConverter}!void {
 		if (i < lo or hi < i) {
 			return error.BadConverter;
@@ -108,7 +108,7 @@ pub const Data = extern struct {
 	/// Simple interface does not require initialisation as it can only operate on
 	/// a single buffer worth of audio.
 	pub fn simple(self: *Data, conv: Converter, chans: uint) Error!void {
-		const result = c.src_simple(@ptrCast(self), @intFromEnum(conv), chans);
+		const result = c.src_simple(@ptrCast(self), @backingInt(conv), chans);
 		if (result != success) {
 			return toError(result);
 		}
@@ -125,7 +125,7 @@ pub const State = opaque {
 	/// internal state of the converter. Choose a converter from the enums below.
 	pub fn create(conv: Converter, channels: uint) Error!*State {
 		var result: c_int = undefined;
-		return if (c.src_new(@intFromEnum(conv), channels, &result)) |s|
+		return if (c.src_new(@backingInt(conv), channels, &result)) |s|
 			@ptrCast(s)
 		else toError(result);
 	}
@@ -152,7 +152,7 @@ pub const State = opaque {
 	) Error!*State {
 		var result: c_int = undefined;
 		const state = c.src_callback_new(
-			@ptrCast(func), @intFromEnum(conv), chans, &result, cb_data);
+			@ptrCast(func), @backingInt(conv), chans, &result, cb_data);
 		return if (state) |s| @ptrCast(s) else toError(result);
 	}
 
@@ -205,13 +205,13 @@ pub const State = opaque {
 /// Return the name of a sample rate converter
 /// or null if no sample rate converter exists for the given value.
 pub fn getName(conv: Converter) ?[*:0]const u8 {
-	return c.src_get_name(@intFromEnum(conv));
+	return c.src_get_name(@backingInt(conv));
 }
 
 /// Return the description of a sample rate converter
 /// or null if no sample rate converter exists for the given value.
 pub fn getDescription(conv: Converter) ?[*:0]const u8 {
-	return c.src_get_description(@intFromEnum(conv));
+	return c.src_get_description(@backingInt(conv));
 }
 
 pub fn getVersion() [*:0]const u8 {
