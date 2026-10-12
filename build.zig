@@ -1,6 +1,7 @@
 const std = @import("std");
-const Translator = @import("translate_c").Translator;
 const LinkMode = std.builtin.LinkMode;
+
+const Translator = @import("translate_c").Translator;
 
 const Options = struct {
 	linkage: LinkMode = .static,
@@ -69,7 +70,7 @@ pub fn build(b: *std.Build) void {
 		.root_source_file = b.path("samplerate.zig"),
 		.target = target,
 		.optimize = optimize,
-		.imports = &.{ .{ .name = "c", .module = c.mod } },
+		.imports = &.{.{ .name = "c", .module = c.mod }},
 	});
 	zig_mod.linkLibrary(lib);
 
@@ -81,7 +82,7 @@ pub fn build(b: *std.Build) void {
 			.root_source_file = b.path("examples/hello.zig"),
 			.target = target,
 			.optimize = optimize,
-			.imports = &.{ .{ .name = "rabbit", .module = zig_mod } },
+			.imports = &.{.{ .name = "rabbit", .module = zig_mod }},
 		}),
 	});
 
@@ -93,7 +94,5 @@ pub fn build(b: *std.Build) void {
 	run.step.dependOn(&install.step);
 	const step_run = b.step("run_hello", "Build and run the zig example");
 	step_run.dependOn(&run.step);
-	// if (b.args) |args| {
-		// run.addArgs(args);
-	// }
+	// run.addPassthruArgs();
 }

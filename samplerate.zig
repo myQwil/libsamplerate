@@ -1,5 +1,6 @@
-const c = @import("c");
 const std = @import("std");
+
+const c = @import("c");
 
 pub const uint = @Int(.unsigned, @bitSizeOf(c_int) - 1);
 pub const ulong = @Int(.unsigned, @bitSizeOf(c_long) - 1);
@@ -15,7 +16,7 @@ pub const Callback = fn (?*anyopaque, *[*]f32) callconv(.c) c_long;
 const success = 0;
 const err_offset = 1;
 
-pub const Error = error {
+pub const Error = error{
 	MallocFailed,
 	BadState,
 	BadData,
@@ -127,7 +128,8 @@ pub const State = opaque {
 		var result: c_int = undefined;
 		return if (c.src_new(@backingInt(conv), channels, &result)) |s|
 			@ptrCast(s)
-		else toError(result);
+		else
+			toError(result);
 	}
 
 	/// Clone a handle : return an anonymous pointer to a new converter
@@ -136,7 +138,8 @@ pub const State = opaque {
 		var result: c_int = undefined;
 		return if (c.src_clone(@ptrCast(self), &result)) |s|
 			@ptrCast(s)
-		else toError(result);
+		else
+			toError(result);
 	}
 
 	/// Initilisation for callback based API : return an anonymous pointer to the
@@ -250,7 +253,7 @@ pub fn intToFloat(I: type, F: type, in: []const I, out: []F) void {
 }
 
 test intToFloat {
-	const in = [_]i32{ -0x1p31, -0x1p16, 0, 0x1p16, 0x1p31-1 };
+	const in = [_]i32{ -0x1p31, -0x1p16, 0, 0x1p16, 0x1p31 - 1 };
 	var out: [in.len]f64 = @splat(0);
 	intToFloat(i32, f64, &in, &out);
 	try std.testing.expectEqual(out[0], -1);
